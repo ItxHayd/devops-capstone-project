@@ -1,5 +1,5 @@
 ---
-name: USE THIS
+name: user-story
 about: Describe this issue as such.
 title: ''
 labels: ''

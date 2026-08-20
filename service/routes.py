@@ -3,7 +3,7 @@ Account Service
 
 This microservice handles the lifecycle of Accounts
 """
-# pylint: disable=unused-import
+# pylint: disable=unused-import, no-member
 from flask import jsonify, request, make_response, abort, url_for   # noqa; F401
 from service.models import Account
 from service.common import status  # HTTP Status Codes
@@ -61,8 +61,12 @@ def create_accounts():
 # LIST ALL ACCOUNTS
 ######################################################################
 
-@app.route("/accounts",methods=["GET"])
+@app.route("/accounts", methods=["GET"])
 def list_all_accounts():
+    """
+    List all Accounts
+    This endpoint will list all Accounts currently in the database
+    """
     app.logger.info("Request to list Accounts")
     accounts = Account.all()
     account_list = [account.serialize() for account in accounts]
@@ -70,21 +74,20 @@ def list_all_accounts():
     return jsonify(account_list), status.HTTP_200_OK
 
 
-
 ######################################################################
 # READ AN ACCOUNT
 ######################################################################
 
-@app.route("/accounts/<int:id>",methods=["GET"])
-def read_an_account(id):
+@app.route("/accounts/<int:account_id>", methods=["GET"])
+def read_an_account(account_id):
     """
     Reads an Account
     This endpoint will read an Account based the account_id that is requested
     """
-    app.logger.info("Request to read an Account with id: %s", id)
-    res = Account.find(id)
+    app.logger.info("Request to read an Account with id: %s", account_id)
+    res = Account.find(account_id)
     if not res:
-        return {"messege":"Account Not Found"}
+        abort(status.HTTP_404_NOT_FOUND, f"Account with id [{account_id}] could not be found.")
     acc = res.serialize()
     return acc, status.HTTP_200_OK
 
@@ -142,3 +145,4 @@ def check_content_type(media_type):
         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
         f"Content-Type must be {media_type}",
     )
+    
